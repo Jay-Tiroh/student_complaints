@@ -72,6 +72,7 @@ $complaints_result = $conn->query($complaints_sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -79,6 +80,7 @@ $complaints_result = $conn->query($complaints_sql);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/dashboard.css">
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -88,7 +90,8 @@ $complaints_result = $conn->query($complaints_sql);
         <ul class="nav-links">
             <li><a href="" class="active"><i class="fas fa-home"></i> <span class="link-text">Dashboard</span></a></li>
             <li><a href="users.php"><i class="fas fa-users"></i> <span class="link-text">Students</span></a></li>
-            <li><a href="../users/logout.php"><i class="fas fa-question-circle"></i> <span class="link-text">Logout</span></a></li>
+            <li><a href="../users/logout.php"><i class="fas fa-question-circle"></i> <span
+                        class="link-text">Logout</span></a></li>
         </ul>
     </div>
 
@@ -169,31 +172,34 @@ $complaints_result = $conn->query($complaints_sql);
                     </tr>
                 </thead>
                 <tbody>
-                <?php if ($complaints_result && $complaints_result->num_rows > 0): ?>
-                    <?php while ($row = $complaints_result->fetch_assoc()): ?>
-                        <tr data-status="<?php echo strtolower(str_replace(' ', '-', $row['status'])); ?>">
-                            <td><?php echo htmlspecialchars($row['matric_number']); ?></td>
-                            <td><?php echo htmlspecialchars($row['first_name'] . ' ' . $row['last_name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['subject']); ?></td>
-                            <td><?php echo date('M d, Y', strtotime($row['created_at'])); ?></td>
-                            <td>
-                                <span class="status status-<?php echo strtolower(str_replace(' ', '-', $row['status'])); ?>">
-                                    <?php echo htmlspecialchars($row['status']); ?>
-                                </span>
-                            </td>
-                            <td>
-                                <button class="action-btn view-btn" data-id="<?php echo $row['id']; ?>">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn delete-btn" data-id="<?php echo $row['id']; ?>">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
+                    <?php if ($complaints_result && $complaints_result->num_rows > 0): ?>
+                        <?php while ($row = $complaints_result->fetch_assoc()): ?>
+                            <tr data-status="<?php echo strtolower(str_replace(' ', '-', $row['status'])); ?>">
+                                <td><?php echo htmlspecialchars($row['matric_number']); ?></td>
+                                <td><?php echo htmlspecialchars($row['first_name'] . ' ' . $row['last_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['subject']); ?></td>
+                                <td><?php echo date('M d, Y', strtotime($row['created_at'])); ?></td>
+                                <td>
+                                    <span
+                                        class="status status-<?php echo strtolower(str_replace(' ', '-', $row['status'])); ?>">
+                                        <?php echo htmlspecialchars($row['status']); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="action-btn view-btn" data-id="<?php echo $row['id']; ?>">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn delete-btn" data-id="<?php echo $row['id']; ?>">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="8">No complaints found.</td>
                         </tr>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <tr><td colspan="8">No complaints found.</td></tr>
-                <?php endif; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -226,7 +232,7 @@ $complaints_result = $conn->query($complaints_sql);
                             <div class="detail-label">Date Submitted:</div>
                             <div class="detail-value" id="modal-date"></div>
                         </div>
-                        
+
                         <div class="detail-row">
                             <div class="detail-label">Status:</div>
                             <div class="detail-value">
@@ -289,7 +295,7 @@ $complaints_result = $conn->query($complaints_sql);
                         document.getElementById('modal-date').textContent = new Date(data.created_at).toLocaleString();
                         document.querySelector('.status-select').value = data.status;
                         document.getElementById('modal-description').textContent = data.message;
-                        document.getElementById('complaint_id').value = data.id;      
+                        document.getElementById('complaint_id').value = data.id;
                         modal.classList.add('active');
                     });
             });
@@ -308,9 +314,9 @@ $complaints_result = $conn->query($complaints_sql);
                 modal.classList.remove('active');
             }
         });
-        
+
         deleteButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', function (e) {
                 e.preventDefault();
                 const complaintId = button.getAttribute('data-id');
                 if (confirm('Are you sure you want to delete this complaint?')) {
@@ -329,7 +335,7 @@ $complaints_result = $conn->query($complaints_sql);
             });
         });
 
-        document.getElementById('replyForm').addEventListener('submit', function(e) {
+        document.getElementById('replyForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
@@ -338,19 +344,18 @@ $complaints_result = $conn->query($complaints_sql);
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    showToast('Operation successful!');
-                    modal.classList.remove('active');
-                    form.reset();
-                } else {
-                    showToast('Failed to send reply.');
-                }
-            })
-            .catch(() => {
-                showToast('An error occurred.');
-            });
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        showToast('Operation successful!');
+                        modal.classList.remove('active');
+                        form.reset();
+                    } else {
+                        showToast('Failed to send reply.');
+                        modal.classList.remove('active');
+                    }
+                })
+            location.reload()
         });
 
         // Filter button functionality
@@ -381,4 +386,5 @@ $complaints_result = $conn->query($complaints_sql);
         });
     </script>
 </body>
+
 </html>
